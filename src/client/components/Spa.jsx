@@ -26,6 +26,7 @@ const Spa = () => {
                     <Typography
                         variant="h6"
                         sx={{
+                            fontWeight: "bold",
                             ...(isMobile ? { marginTop: "32px" } : ""),
                         }}>
                         SPA{" "}

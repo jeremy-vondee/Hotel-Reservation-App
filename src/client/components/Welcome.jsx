@@ -27,6 +27,7 @@ const Welcome = () => {
                     <Typography
                         variant="h6"
                         sx={{
+                            fontWeight: "bold",
                             ...(isMobile ? { marginTop: "32px" } : ""),
                         }}>
                         Luxirado Welcomes You{" "}

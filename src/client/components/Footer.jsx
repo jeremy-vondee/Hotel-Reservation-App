@@ -5,58 +5,54 @@ import {
     ThemeProvider,
     useTheme,
     useMediaQuery,
+    Grid,
 } from "@mui/material"
 import FacebookIcon from "@mui/icons-material/Facebook"
 import TwitterIcon from "@mui/icons-material/Twitter"
 import MailIcon from "@mui/icons-material/Mail"
+import CopyrightIcon from "@mui/icons-material/Copyright"
 
 const Footer = () => {
     const theme = useTheme()
-    const isMobile = useMediaQuery((theme) => theme.breakpoints.down("sm"))
-    const isTablet = useMediaQuery((theme) => theme.breakpoints.down("md"))
+    const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
+    const isTablet = useMediaQuery(theme.breakpoints.down("md"))
 
     return (
-        <>
-            <ThemeProvider theme={theme}>
-                <Stack
-                    alignItems={"center"}
-                    justifyContent={"space-around"}
-                    sx={{
-                        backgroundColor: theme.palette.secondary.main,
-                        ...(isTablet
-                            ? {
-                                  flexWrap: "wrap",
-                                  justifyContent: "flex-start",
-                                  paddingLeft: "24px",
-                              }
-                            : ""),
-                        ...(isMobile
-                            ? {
-                                  flexDirection: "column",
-                                  justifyContent: "space-between",
-                              }
-                            : { flexDirection: "row" }),
-                    }}
-                    pt={2}
-                    pb={2}
-                    mt={8}>
+        <Stack
+            mt={6}
+            sx={{
+                backgroundColor: theme.palette.secondary.main,
+            }}>
+            <Grid
+                container
+                sx={{
+                    alignItems: "center",
+                }}
+                mt={2}
+                pl={3}
+                spacing={2}>
+                <Grid item xs={12} sm={4}>
                     <Typography
                         variant="h4"
                         color={theme.text.secondary}
                         sx={{ fontWeight: "bold" }}>
                         LUXIRADO
                     </Typography>
+                </Grid>
+                <Grid item xs={12} sm={8}>
                     <Stack
+                        gap={{ xs: 0, sm: 3 }}
                         sx={{
                             ...(isMobile
                                 ? { flexDirection: "column" }
-                                : { flexDirection: "row" }),
+                                : {
+                                      flexDirection: "row",
+                                  }),
                         }}>
                         <Link
                             href="#"
                             variant="title1"
                             underline="none"
-                            sx={{ ...(isMobile ? "" : { marginLeft: "24px" }) }}
                             color={theme.text.secondary}>
                             About
                         </Link>
@@ -64,7 +60,6 @@ const Footer = () => {
                             href="#"
                             variant="title1"
                             underline="none"
-                            sx={{ ...(isMobile ? "" : { marginLeft: "24px" }) }}
                             color={theme.text.secondary}>
                             Sitemap
                         </Link>
@@ -72,7 +67,6 @@ const Footer = () => {
                             href="#"
                             variant="title1"
                             underline="none"
-                            sx={{ ...(isMobile ? "" : { marginLeft: "24px" }) }}
                             color={theme.text.secondary}>
                             Terms & Conditions
                         </Link>
@@ -80,14 +74,13 @@ const Footer = () => {
                             href="#"
                             variant="title1"
                             underline="none"
-                            sx={{ ...(isMobile ? "" : { marginLeft: "24px" }) }}
                             color={theme.text.secondary}>
                             Contact
                         </Link>
                     </Stack>
-                    <Stack
-                        flexDirection={"row"}
-                        sx={{ ...(isTablet ? { marginTop: "24px" } : "") }}>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                    <Stack gap={3} flexDirection={"row"}>
                         <Typography
                             variant="body1"
                             color={theme.text.secondary}>
@@ -97,30 +90,50 @@ const Footer = () => {
                             href="#"
                             variant="title1"
                             color={theme.text.secondary}
-                            underline="none"
-                            ml={2}>
+                            underline="none">
                             <FacebookIcon />
                         </Link>
                         <Link
                             href="#"
                             variant="title1"
                             color={theme.text.secondary}
-                            underline="none"
-                            ml={2}>
+                            underline="none">
                             <TwitterIcon />
                         </Link>
                         <Link
                             href="#"
                             variant="title1"
                             color={theme.text.secondary}
-                            underline="none"
-                            ml={2}>
+                            underline="none">
                             <MailIcon />
                         </Link>
                     </Stack>
-                </Stack>
-            </ThemeProvider>
-        </>
+                </Grid>
+            </Grid>
+            <Stack
+                flexDirection="row"
+                alignItems="center"
+                justifyContent="center">
+                <CopyrightIcon
+                    sx={{
+                        fontWeight: "100",
+                        fontSize: "10px",
+                        textAlign: "center",
+                        color: "#fff",
+                    }}
+                />
+                <Typography
+                    variant="subtitle1"
+                    color={theme.text.secondary}
+                    sx={{
+                        fontWeight: "100",
+                        fontSize: "10px",
+                        textAlign: "center",
+                    }}>
+                    CopyRight Reserved
+                </Typography>
+            </Stack>
+        </Stack>
     )
 }
 

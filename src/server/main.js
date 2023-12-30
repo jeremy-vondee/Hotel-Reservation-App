@@ -2,6 +2,7 @@ import express from "express"
 import ViteExpress from "vite-express"
 import multer from "multer"
 import cors from "cors"
+import dayjs from "dayjs"
 
 const app = express()
 app.use(express.urlencoded({ extended: false }))
@@ -10,16 +11,11 @@ app.use(cors())
 const upload = multer()
 
 app.post("/api", upload.none(), (req, res) => {
-    const { checkInDate, checkOutDate, numberOfGuest } = req.body
-    res.send({
-        body: {
-            checkInDate: checkInDate,
-            checkOutDate: checkOutDate,
-            numberOfGuest: numberOfGuest,
-            message: checkInDate,
-        },
+    const { reservationDate, numberOfGuest } = req.body
+    console.log(reservationDate)
+    res.json({
+        body: "Reservation successful",
     })
-    console.log(checkInDate, checkOutDate, numberOfGuest)
 })
 
 ViteExpress.listen(app, 3000, () =>

@@ -11,48 +11,80 @@ import {
     IconButton,
 } from "@mui/material"
 import HeroImg from "../assets/luxury-bedroom-suite-resort-high-rise-hotel-with-working-table.jpg"
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider"
-import { DatePicker } from "@mui/x-date-pickers/DatePicker"
+import { AdapterDayjs } from "@mui/x-date-pickers-pro/AdapterDayjs"
+import { LocalizationProvider } from "@mui/x-date-pickers-pro"
+import { DateRangePicker } from "@mui/x-date-pickers-pro/DateRangePicker"
+import { SingleInputDateRangeField } from "@mui/x-date-pickers-pro/SingleInputDateRangeField"
 import dayjs from "dayjs"
 import axios from "axios"
+
 const Hero = () => {
     const todaysDate = dayjs()
-    const [checkInDate, setCheckInDate] = useState(todaysDate)
-    const [checkOutDate, setCheckOutDate] = useState(todaysDate)
-    const [numberOfGuest, setNumberOfGuest] = useState("1")
-    const [openSnackBar, setOpenSnackBar] = useState(false)
+    const [reservation, setReservation] = useState({
+        data: {
+            reservationDate: todaysDate,
+            numberOfGuest: "1",
+        },
+        error: { status: false, message: null },
+    })
+
+    const { reservationDate, numberOfGuest } = reservation.data
+    const error = reservation.error
+    const snackbarOpen = error.message !== null
 
     const theme = useTheme()
-    const isMobile = useMediaQuery((theme) => theme.breakpoints.down("sm"))
-    const isTablet = useMediaQuery((theme) => theme.breakpoints.down("md"))
+    const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
+    const isTablet = useMediaQuery(theme.breakpoints.down("md"))
 
-    const handleCheckInDate = (value) => {
-        setCheckInDate(value)
+    const handleErrorOccurred = (reason) => {
+        if (reason === "INVALID_GUEST_NUMBER") {
+            setReservation((prev) => ({
+                ...prev,
+                error: {
+                    status: true,
+                    message: "Number of guest of empty or 0",
+                },
+            }))
+        }
     }
-    const handleCheckOutDate = (value) => {
-        setCheckOutDate(value)
+
+    const handleReservationDate = (event) => {
+        const value = event.target.value
+        setReservation((prev) => ({
+            ...prev,
+            data: { ...prev.data, reservationDate: value },
+            error: { status: false, message: null },
+        }))
     }
     const handleGuestNumber = (event) => {
-        setNumberOfGuest(event.target.value)
-    }
-    const open = () => {
-        setOpenSnackBar(true)
+        const value = event.target.value
+
+        if (+value <= 0) {
+            handleErrorOccurred("INVALID_GUEST_NUMBER")
+        } else {
+            setReservation((prev) => ({
+                ...prev,
+                data: { ...prev.data, numberOfGuest: value },
+                error: { status: false, message: null },
+            }))
+        }
     }
     const handleClose = (event, reason) => {
         if (reason === "timeout") {
             return
         }
 
-        setOpen(false)
+        setReservation((prev) => ({
+            ...prev,
+            error: { ...prev.error, message: null },
+        }))
     }
 
     const handleFormSubmit = (event) => {
         event.preventDefault
 
         let formData = {
-            checkInDate: checkInDate,
-            checkOutDate: checkOutDate,
+            reservationDate: reservationDate,
             numberOfGuest: numberOfGuest,
         }
 
@@ -69,150 +101,125 @@ const Hero = () => {
     }
 
     return (
-        <>
-            <ThemeProvider theme={theme}>
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <Stack
+                sx={{
+                    position: "relative",
+                    backgroundImage: `url(${HeroImg})`,
+                    backgroundPosition: "center",
+                    backgroundRepeat: "no-repeat",
+                    backgroundSize: "cover",
+                    height: "100vh",
+                    filter: "blur(3px)",
+                    ...(isMobile
+                        ? {
+                              height: "120vh",
+                          }
+                        : isTablet
+                        ? { height: "118vh" }
+                        : ""),
+                }}></Stack>
+            <Stack alignItems="center">
+                <Typography
+                    variant="h4"
+                    color={theme.text.tertiary}
+                    sx={{
+                        position: "absolute",
+                        top: "16%",
+                        fontWeight: "bold",
+                        ...(isMobile
+                            ? {
+                                  fontSize: "24px",
+                                  textAlign: "center",
+                                  top: "13%",
+                              }
+                            : isTablet
+                            ? { fontSize: "25px" }
+                            : ""),
+                    }}>
+                    Experience a night like never before
+                </Typography>
+                <Stack
+                    flexDirection="column"
+                    justifyContent="center"
+                    component="form"
+                    sx={{
+                        position: "absolute",
+                        top: "26%",
+                        ...(isMobile
+                            ? {
+                                  top: "30%",
+                              }
+                            : isTablet
+                            ? { fontSize: "25px" }
+                            : ""),
+                    }}>
                     <Stack
-                        alignItems={"center"}
-                        component="form"
+                        backgroundColor={theme.palette.secondary.main}
+                        pl={3}
+                        pr={3}
+                        pb={3}
                         sx={{
-                            position: "relative",
-                            backgroundImage: `url(${HeroImg})`,
-                            backgroundPosition: "center",
-                            backgroundRepeat: "no-repeat",
-                            backgroundSize: "cover",
-                            ...(isMobile
-                                ? { height: "125vh" }
-                                : isTablet
-                                ? { height: "100vh" }
-                                : { height: "100vh" }),
-                            "&:: before": {
-                                content: '""',
-                                position: "relative",
-                                filter: "blur(10px)",
-                                "z-index": 0,
-                            },
+                            borderRadius: "10px",
                         }}>
+                        <DateRangePicker
+                            value={reservationDate}
+                            onChange={handleReservationDate}
+                            pt={3}
+                            sx={{
+                                "& .MuiInputBase-root": {
+                                    marginTop: "16px",
+                                    backgroundColor:
+                                        theme.palette.tertiary.main,
+                                    borderRadius: "5px",
+                                    color: theme.text.tertiary.color,
+                                },
+                            }}
+                            slots={{ field: SingleInputDateRangeField }}
+                        />
                         <Typography
-                            variant="h4"
-                            color={theme.text.tertiary}
-                            sx={{
-                                position: "absolute",
-                                top: "16%",
-                                ...(isMobile
-                                    ? { fontSize: "18px" }
-                                    : isTablet
-                                    ? { fontSize: "25px" }
-                                    : ""),
-                            }}>
-                            Experience a night like never before
+                            variant="subtitle1"
+                            color={theme.text.secondary}
+                            mt={3}
+                            mb={1}>
+                            Number of guest
                         </Typography>
-                        <Stack
-                            flexDirection={"column"}
-                            justifyContent={"center"}
+                        <TextField
+                            variant="outlined"
+                            type="number"
+                            value={numberOfGuest}
+                            onChange={handleGuestNumber}
                             sx={{
-                                position: "absolute",
-                                top: "26%",
-                            }}>
-                            <Stack
-                                backgroundColor={theme.palette.secondary.main}
-                                pl={3}
-                                pr={3}
-                                pb={3}
-                                sx={{
-                                    borderRadius: "10px",
-                                }}>
-                                <Typography
-                                    variant="subtitle1"
-                                    color={theme.text.secondary}
-                                    mt={3}
-                                    mb={1}>
-                                    Check-in
-                                </Typography>
-                                <DatePicker
-                                    minDate={todaysDate}
-                                    onChange={handleCheckInDate}
-                                    value={checkInDate}
-                                    sx={{
-                                        "& .MuiInputBase-input": {
-                                            backgroundColor:
-                                                theme.palette.tertiary.main,
-                                            borderRadius: "5px",
-                                            color: theme.text.tertiary.color,
-                                        },
-                                    }}
-                                    size="small"
-                                />
-                                <Typography
-                                    variant="subtitle1"
-                                    color={theme.text.secondary}
-                                    mt={3}
-                                    mb={1}>
-                                    Check-out
-                                </Typography>
-                                <DatePicker
-                                    defaultValue={todaysDate}
-                                    minDate={todaysDate}
-                                    onChange={handleCheckOutDate}
-                                    value={checkOutDate}
-                                    sx={{
-                                        "& .MuiInputBase-input": {
-                                            backgroundColor:
-                                                theme.palette.tertiary.main,
-                                            borderRadius: "5px",
-                                            color: theme.text.tertiary.color,
-                                        },
-                                    }}
-                                />
-                                <Typography
-                                    variant="subtitle1"
-                                    color={theme.text.secondary}
-                                    onChange={handleGuestNumber}
-                                    mt={3}
-                                    mb={1}>
-                                    Number of guest
-                                </Typography>
-                                <TextField
-                                    variant="outlined"
-                                    type="number"
-                                    value={numberOfGuest}
-                                    onChange={handleGuestNumber}
-                                    sx={{
-                                        "& .MuiInputBase-input": {
-                                            backgroundColor:
-                                                theme.palette.tertiary.main,
-                                            borderRadius: "5px",
-                                            color: theme.text.tertiary.color,
-                                        },
-                                    }}
-                                />
+                                "& .MuiInputBase-input": {
+                                    backgroundColor:
+                                        theme.palette.tertiary.main,
+                                    borderRadius: "5px",
+                                    color: theme.text.tertiary.color,
+                                },
+                            }}
+                            inputProps={{
+                                min: "1",
+                            }}
+                        />
+                        <Snackbar
+                            open={snackbarOpen}
+                            autoHideDuration={3000}
+                            onClose={handleClose}
+                            message={error.message}
+                        />
 
-                                {numberOfGuest <= 0 ? (
-                                    <>
-                                        <Snackbar
-                                            open={!openSnackBar}
-                                            autoHideDuration={3000}
-                                            onClose={handleClose}
-                                            message="Number of guest of empty or 0"
-                                        />
-                                    </>
-                                ) : (
-                                    ""
-                                )}
-
-                                <Button
-                                    variant="contained"
-                                    sx={{ marginTop: "16px" }}
-                                    disableElevation
-                                    onClick={handleFormSubmit}>
-                                    Search Availability
-                                </Button>
-                            </Stack>
-                        </Stack>
+                        <Button
+                            variant="contained"
+                            sx={{ marginTop: "16px" }}
+                            disableElevation
+                            onClick={handleFormSubmit}
+                            disabled={error.status === true}>
+                            Search Availability
+                        </Button>
                     </Stack>
-                </LocalizationProvider>
-            </ThemeProvider>
-        </>
+                </Stack>
+            </Stack>
+        </LocalizationProvider>
     )
 }
 export default Hero
