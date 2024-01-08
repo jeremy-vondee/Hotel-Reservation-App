@@ -24,11 +24,12 @@ const Hero = () => {
         data: {
             reservationDate: todaysDate,
             numberOfGuest: "1",
+            response: null,
         },
         error: { status: false, message: null },
     })
 
-    const { reservationDate, numberOfGuest } = reservation.data
+    const { reservationDate, numberOfGuest, response } = reservation.data
     const error = reservation.error
     const snackbarOpen = error.message !== null
 
@@ -48,8 +49,7 @@ const Hero = () => {
         }
     }
 
-    const handleReservationDate = (event) => {
-        const value = event.target.value
+    const handleReservationDate = (value) => {
         setReservation((prev) => ({
             ...prev,
             data: { ...prev.data, reservationDate: value },
@@ -94,10 +94,16 @@ const Hero = () => {
                     "Content-Type": "multipart/form-data",
                 },
             })
-            .then((data) => console.log(data))
+            .then((res) => {
+                setReservation((prev) => ({
+                    ...prev,
+                    data: { ...prev.data, response: res.data },
+                }))
+            })
             .catch((err) => {
                 console.log(err)
             })
+        console.log(response)
     }
 
     return (
@@ -157,18 +163,25 @@ const Hero = () => {
                     <Stack
                         backgroundColor={theme.palette.secondary.main}
                         pl={3}
-                        pr={3}
                         pb={3}
+                        pr={3}
+                        pt={3}
                         sx={{
                             borderRadius: "10px",
                         }}>
+                        <Typography
+                            variant="subtitle1"
+                            color={theme.text.secondary}
+                            mt={3}
+                            mb={1}>
+                            Check-in Check-out
+                        </Typography>
                         <DateRangePicker
-                            value={reservationDate}
                             onChange={handleReservationDate}
+                            disablePast
                             pt={3}
                             sx={{
                                 "& .MuiInputBase-root": {
-                                    marginTop: "16px",
                                     backgroundColor:
                                         theme.palette.tertiary.main,
                                     borderRadius: "5px",
