@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import {
     Button,
     Stack,
@@ -9,6 +9,7 @@ import {
     TextField,
     useMediaQuery,
     IconButton,
+    Alert,
 } from "@mui/material"
 import HeroImg from "../assets/luxury-bedroom-suite-resort-high-rise-hotel-with-working-table.jpg"
 import { AdapterDayjs } from "@mui/x-date-pickers-pro/AdapterDayjs"
@@ -25,6 +26,7 @@ const Hero = () => {
             reservationDate: todaysDate,
             numberOfGuest: "1",
             response: null,
+            isSubmitted: false,
         },
         error: { status: false, message: null },
     })
@@ -89,7 +91,7 @@ const Hero = () => {
         }
 
         axios
-            .post("http://localhost:3000/api", formData, {
+            .post("/api", formData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
                 },
@@ -97,17 +99,50 @@ const Hero = () => {
             .then((res) => {
                 setReservation((prev) => ({
                     ...prev,
-                    data: { ...prev.data, response: res.data },
+                    data: {
+                        ...prev.data,
+                        response: res.data,
+                        isSubmitted: true,
+                    },
                 }))
             })
             .catch((err) => {
                 console.log(err)
             })
-        console.log(response)
     }
 
     return (
         <LocalizationProvider dateAdapter={AdapterDayjs}>
+            {reservation.data.isSubmitted != false ? (
+                <Alert
+                    severity="success"
+                    sx={{
+                        position: "absolute",
+                        top: "50px",
+                        left: "76vw",
+                        zIndex: 5,
+                        ...(isMobile
+                            ? {
+                                  left: "30vw",
+                              }
+                            : isTablet
+                            ? { left: "60vw" }
+                            : ""),
+                    }}
+                    onClose={() => {
+                        setReservation((prev) => ({
+                            ...prev,
+                            data: {
+                                ...prev.data,
+                                isSubmitted: false,
+                            },
+                        }))
+                    }}>
+                    {Object.values(reservation.data.response)}
+                </Alert>
+            ) : (
+                ""
+            )}
             <Stack
                 sx={{
                     position: "relative",
